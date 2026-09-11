@@ -1,10 +1,10 @@
 package br.com.fiapride.main;
 
-import br.com.fiapride.model.veiculos;
+import br.com.fiapride.model.Veiculo;
 
-public class principal {
+public class SistemaPrincipal {
     public static void main(String[] args) {
-        veiculos v1 = new veiculos();
+        veiculos veiculo1 = new veiculos("Carlos", "ABC-1234", -10);
 
         v1.individuo = "Carlos";
         v1.pl = "ABC-1234";
