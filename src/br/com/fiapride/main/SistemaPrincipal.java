@@ -4,19 +4,21 @@ import br.com.fiapride.model.Veiculo;
 
 public class SistemaPrincipal {
     public static void main(String[] args) {
-        veiculos veiculo1 = new veiculos("Carlos", "ABC-1234", -10);
+        Veiculo veiculo1 = new Veiculo("Carlos", "ABC-1234", -10);
 
-        v1.individuo = "Carlos";
-        v1.pl = "ABC-1234";
-        v1.gas = -10; // PERIGO: Valores negativos permitidos!
+        System.out.println("\n-------------------TESTE 1 (Criacao)--------------------------");
+        System.out.println("Motorista: " + veiculo1.getMotorista() + " - Placa: " + veiculo1.getPlaca() + " - Gasolina: " + veiculo1.getCombustivel());
 
-        v1.adicionar(50);
-        v1.gasta(100); // PERIGO: Consome mais que o disponível!
+        System.out.println("\n-------------------TESTE 2 (Abastecer)------------------------");
+        veiculo1.abastecer(100);
+        System.out.println("Motorista: " + veiculo1.getMotorista() + " - Placa: " + veiculo1.getPlaca() + " - Gasolina: " + veiculo1.getCombustivel());
 
-        System.out.println(
-            "Dono: " + v1.individuo +
-            " | Placa: " + v1.pl +
-            " | Gasolina: " + v1.gas
-        );
+        System.out.println("\n-------------------TESTE 3 (Gastar Acima do Limite)-----------");
+        veiculo1.consumir(150.0);
+        System.out.println("Motorista: " + veiculo1.getMotorista() + " - Placa: " + veiculo1.getPlaca() + " - Gasolina: " + veiculo1.getCombustivel());
+
+        System.out.println("\n-------------------TESTE 4 (Abastecer valor negativo)------------------------");
+        veiculo1.abastecer(-10);
+        System.out.println("Motorista: " + veiculo1.getMotorista() + " - Placa: " + veiculo1.getPlaca() + " - Gasolina: " + veiculo1.getCombustivel());
     }
 }
