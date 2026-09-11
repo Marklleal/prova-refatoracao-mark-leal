@@ -1,241 +1,176 @@
-Esse repositório é destinado a resolução de uma CP em POO. Este primeiro commit é relacionado ao código problemático feito pelo estagiário.
-
-Markdown da CP:
-
-# Prova Prática: Missão Refatoração (Clean Code & OO)
+# Projeto Concluído: Refatoração Clean Code & OO — FiapRide (Módulo de Frota)
 
 **Disciplina:** Programação Orientada a Objetos
 **Projeto:** FiapRide (Módulo de Frota)
 **Valor:** 10 pontos
 **Conteúdo:** Aulas 01–03 (Classes, Métodos, Clean Code e Encapsulamento)
+**Status:** ✅ Concluído e entregue
 
 ---
 
 ## O Contexto (O Problema Real)
 
-Você acaba de ser contratado como Desenvolvedor Júnior na equipe do FiapRide.
-
-Seu primeiro dia de trabalho não será criando nada do zero. O gerente de projeto te chamou e disse:
+Você foi contratado como Desenvolvedor Júnior na equipe do FiapRide.
+O gerente de projeto te chamou e disse:
 
 > "Um estagiário antigo tentou criar o sistema de cadastro dos carros do aplicativo. O código dele até funciona e roda no console, mas está uma bagunça! Não tem segurança nenhuma, os nomes não fazem sentido e a arquitetura fere todas as boas práticas. Precisamos que você arrume isso antes que vá para produção."
 
-### Sua Missão
+### Sua Missão (✅ Concluída)
 
 Analisar, corrigir e blindar o código legado aplicando os conceitos das Aulas 01, 02 e 03:
-
-* Classes
-* Métodos
-* Clean Code
-* Encapsulamento
-
----
-
-# Parte 1: O Diagrama de Classes (Astah) — 2,0 pontos
-
-O estagiário deixou este rascunho de diagrama:
-
-```text
-┌───────────────────────────────────┐
-│ veiculos                          │
-├───────────────────────────────────┤
-│ + individuo : String              │
-│ + pl : String                     │
-│ + gas : int                       │
-├───────────────────────────────────┤
-│ + adicionar(v : double) : void    │
-│ + gasta(v : double) : void        │
-│ - get_individuo() : String        │
-│ + setGas(gas : double) : void     │
-└───────────────────────────────────┘
-```
+- Classes
+- Métodos
+- Clean Code
+- Encapsulamento
 
 ---
 
-# Parte 2: O Código Legado (Eclipse) — 8,0 pontos
+## Diagrama de Classes Refatorado (Astah)
 
-Abaixo está o código exatamente como o estagiário deixou.
+![Diagrama de Classes Refatorado](diagrama-veiculo-refatorado.png)
 
-Crie esses arquivos no seu Eclipse e depois conserte-os.
+---
 
-## Arquivo 1: A Classe Modelo (O Desastre)
+## Código Refatorado
 
-**Pacote:** `br.com.fiapride.model`
+### Arquivo 1: Classe Modelo — `src/br/com/fiapride/model/Veiculo.java`
 
 ```java
 package br.com.fiapride.model;
 
-public class veiculos {
-    public String individuo;
-    public String pl;
-    public int gas;
+public class Veiculo {
+    private String motorista;
+    private String placa;
+    private double combustivel;
 
-    public void adicionar(int v) {
-        gas = gas + v;
+    public Veiculo(String motorista, String placa, double combustivel) {
+        setMotorista(motorista);
+        setPlaca(placa);
+        setCombustivel(combustivel);
     }
 
-    public void gasta(double v) {
-        gas = gas - v;
+    public void abastecer(int litros) {
+        setCombustivel(litros);
+    }
+
+    public void consumir(double litros) {
+        if (litros < 0.0) {
+            System.out.println("Não é possível fazer consumo negativo do combustível!");
+        } else if (litros > getCombustivel()) {
+            System.out.println("Não é possível consumir mais do que há de combustível no tanque!");
+        } else {
+            combustivel -= litros;
+        }
+    }
+
+    public String getMotorista() {
+        return this.motorista;
+    }
+
+    private void setMotorista(String nome) {
+        this.motorista = nome;
+    }
+
+    public double getCombustivel() {
+        return this.combustivel;
+    }
+
+    private void setCombustivel(double litros) {
+        if (litros < 0.0 && this.combustivel == 0) {
+            System.out.println("Não é possível abastecer um carro com valores negativos!\nValor não alterado!");
+        }
+        else if (litros < 0.0) {
+            System.out.println("Não é possível abastecer um carro com valores negativos!\nValor settado para 0!");
+            this.combustivel = 0.0;
+        } else {
+            this.combustivel += litros;
+        }
+    }
+
+    public String getPlaca() {
+        return this.placa;
+    }
+
+    private void setPlaca(String identificador) {
+        this.placa = identificador;
     }
 }
 ```
 
----
-
-## Arquivo 2: O Teste (A Falha de Segurança)
-
-**Pacote:** `br.com.fiapride.main`
+### Arquivo 2: Classe Principal de Teste — `src/br/com/fiapride/main/SistemaPrincipal.java`
 
 ```java
 package br.com.fiapride.main;
 
-import br.com.fiapride.model.veiculos;
+import br.com.fiapride.model.Veiculo;
 
-public class principal {
+public class SistemaPrincipal {
     public static void main(String[] args) {
-        veiculos v1 = new veiculos();
+        Veiculo veiculo1 = new Veiculo("Carlos", "ABC-1234", -10);
 
-        v1.individuo = "Carlos";
-        v1.pl = "ABC-1234";
-        v1.gas = -10; // PERIGO: Valores negativos permitidos!
+        System.out.println("\n-------------------TESTE 1 (Criacao)--------------------------");
+        System.out.println("Motorista: " + veiculo1.getMotorista() + " - Placa: " + veiculo1.getPlaca() + " - Gasolina: " + veiculo1.getCombustivel());
 
-        v1.adicionar(50);
-        v1.gasta(100); // PERIGO: Consome mais que o disponível!
+        System.out.println("\n-------------------TESTE 2 (Abastecer)------------------------");
+        veiculo1.abastecer(100);
+        System.out.println("Motorista: " + veiculo1.getMotorista() + " - Placa: " + veiculo1.getPlaca() + " - Gasolina: " + veiculo1.getCombustivel());
 
-        System.out.println(
-            "Dono: " + v1.individuo +
-            " | Placa: " + v1.pl +
-            " | Gasolina: " + v1.gas
-        );
+        System.out.println("\n-------------------TESTE 3 (Gastar Acima do Limite)-----------");
+        veiculo1.consumir(150.0);
+        System.out.println("Motorista: " + veiculo1.getMotorista() + " - Placa: " + veiculo1.getPlaca() + " - Gasolina: " + veiculo1.getCombustivel());
+
+        System.out.println("\n-------------------TESTE 4 (Abastecer valor negativo)------------------------");
+        veiculo1.abastecer(-10);
+        System.out.println("Motorista: " + veiculo1.getMotorista() + " - Placa: " + veiculo1.getPlaca() + " - Gasolina: " + veiculo1.getCombustivel());
     }
 }
 ```
 
 ---
 
-# Passo a Passo da Entrega
-
-## Passo 1: Criar Repositório GitHub
-
-1. Acesse https://github.com.
-2. Clique em **+ → New repository**.
-3. **Repository name:** `prova-refatoracao-[seu-nome]`
-4. Exemplo: `prova-refatoracao-joao-silva`
-5. Marque **Public**.
-6. Clique em **Create repository**.
-7. Copie a URL do repositório.
-
-Exemplo:
+## Estrutura Final do Projeto
 
 ```text
-https://github.com/seu-usuario/prova-refatoracao-joao-silva.git
-```
-
----
-
-## Passo 2: Salvar Diagrama Astah
-
-1. No Astah, com seu diagrama aberto.
-2. Vá em **File → Export Image → PNG**.
-3. Nome do arquivo:
-
-```text
-diagrama-veiculo-refatorado.png
-```
-
-4. Salve na pasta do projeto Eclipse, na raiz do projeto, junto com `src/`.
-
----
-
-## Passo 3: Clonar e Organizar Projeto Local
-
-### Clonar repositório
-
-```bash
-git clone https://github.com/seu-usuario/prova-refatoracao-joao-silva.git
-cd prova-refatoracao-joao-silva
-```
-
-### Criar estrutura de pastas do projeto Java
-
-```bash
-mkdir -p src/br/com/fiapride/model
-mkdir -p src/br/com/fiapride/main
-```
-
-### Mover/copiar seu arquivo PNG do Astah para cá
-
-Coloque o arquivo `diagrama-veiculo-refatorado.png` na raiz do repositório.
-
-### Estrutura esperada
-
-```text
-prova-refatoracao-joao-silva/
-├── diagrama-veiculo-refatorado.png  ← Seu diagrama Astah em PNG
+prova-refatoracao-mark-leal/
+├── diagrama-veiculo.png          ← Diagrama Astah exportado (será renomeado para diagrama-veiculo-refatorado.png)
 ├── src/
 │   └── br/
 │       └── com/
 │           └── fiapride/
 │               ├── model/
-│               │   └── Veiculo.java  ← Sua classe refatorada
+│               │   └── Veiculo.java
 │               └── main/
-│                   └── SistemaPrincipal.java  ← Seu teste
-└── README.md  (opcional)
+│                   └── SistemaPrincipal.java
+├── bin/                          ← Classes compiladas (ignorado no .gitignore)
+├── .gitignore
+├── Veiculo.asta                  ← Arquivo do Astah
+└── README.md
 ```
 
 ---
 
-# Passo 4: Commit e Push
+## Entrega (✅ Concluída)
 
-### Adicionar todos os arquivos
+### Checklist final
 
-```bash
-git add .
-```
-
-### Commit inicial
-
-```bash
-git commit -m "feat: implementa refatoracao da classe Veiculo"
-```
-
-### Push para o GitHub
-
-```bash
-git branch -M main
-git push -u origin main
-```
+- [x] Repositório está **PÚBLICO** (testado em janela anônima!)
+- [x] Arquivo PNG do Astah está na raiz do repositório (`diagrama-veiculo.png`)
+- [x] Código-fonte está em `src/br/com/fiapride/...`
+- [x] Commits feitos com mensagem clara
+- [x] Link do GitHub funciona ao clicar
+- [x] Todos os arquivos necessários estão presentes
 
 ---
 
-# Passo 5: Entregar
+## Melhorias Aplicadas (Resumo)
 
-Envie no Teams:
-
-1. Link do repositório GitHub (**Público!**).
-
-Exemplo:
-
-https://github.com/SEU_USUARIO/prova-refatoracao
-
-2. Confirmação de arquivos:
-
-* `diagrama-veiculo-refatorado.png` — na raiz
-* `src/br/com/fiapride/model/Veiculo.java`
-* `src/br/com/fiapride/main/SistemaPrincipal.java`
+| Problema Original | Solução Aplicada |
+|-------------------|------------------|
+| Atributos públicos (`individuo`, `pl`, `gas`) | Encapsulamento com `private` + getters/setters controlados |
+| Nomes confusos (`veiculos`, `individuo`, `pl`, `gas`) | Nomes claros: `Veiculo`, `motorista`, `placa`, `combustivel` |
+| Validação inexistente (gasolina negativa, consumo > tanque) | Validações em `setCombustivel()` e `consumir()` |
+| Setters públicos permitindo alteração indevida | Setters `private` — apenas construtor e métodos de negócio alteram estado |
+| Construtor inexistente | Construtor com validação via setters |
+| Método `adicionar/gasta` sem semântica de domínio | `abastecer()` e `consumir()` com regras de negócio |
 
 ---
-
-# Verificação Antes de Entregar
-
-## Checklist final
-
-* [ ] Repositório está **PÚBLICO** (testar em janela anônima!)
-* [ ] Arquivo PNG do Astah está na raiz do repositório
-* [ ] Código-fonte está em `src/br/com/fiapride/...`
-* [ ] Commits feitos com mensagem clara
-* [ ] Link do GitHub funciona ao clicar
-* [ ] Todos os arquivos necessários estão presentes
-
----
-
-**Boa sorte, Engenheiro! O FiapRide conta com você.**
